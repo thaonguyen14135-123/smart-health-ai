@@ -1,107 +1,469 @@
-<!DOCTYPE html>
-<html lang="vi">
+<!DOCTYPE html><html>
 <head>
-<meta charset="UTF-8">
-<title>Smart Health AI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
+<title>Smart Health AI</title><style>
 body{
-  font-family: Arial;
-  background: linear-gradient(135deg,#00c6ff,#0072ff);
-  color:white;
-  text-align:center;
-  padding:20px;
+    font-family: Arial;
+    margin:0;
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
 }
-.box{
-  background: rgba(255,255,255,0.15);
-  padding:20px;
-  border-radius:20px;
-  margin-top:20px;
+
+.container{
+    padding:20px;
 }
-input, select, button{
-  padding:10px;
-  margin:10px;
-  border-radius:10px;
-  border:none;
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
 }
+
+h2{
+    text-align:center;
+    color:white;
+}
+
+input, select{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:10px;
+    border:none;
+    background:#f1f1f1;
+}
+
+label{
+    display:block;
+    margin-top:6px;
+}
+
 button{
-  background:#ff4081;
-  color:white;
-  font-weight:bold;
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:12px;
+    background:#4facfe;
+    color:white;
+    font-weight:bold;
 }
-</style>
-</head>
 
-<body>
+.result{
+    margin-top:20px;
+    background:#f9f9f9;
+    padding:15px;
+    border-radius:15px;
+    line-height:1.6;
+}
 
-<h1>💪 Smart Health AI</h1>
+.notify{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#333;
+    color:white;
+    padding:10px 20px;
+    border-radius:20px;
+    display:none;
+}
+</style></head><body><h2>🌿 Smart Health AI</h2><div class="container">
+<div class="card"><h3>Thông tin</h3>
+<input id="weight" placeholder="Cân nặng (kg)">
+<input id="height" placeholder="Chiều cao (cm)"><h3>Vấn đề</h3><label><input type="checkbox" value="Béo phì"> Béo phì</label>
+<label><input type="checkbox" value="Giảm mỡ nhẹ"> Giảm mỡ nhẹ</label>
+<label><input type="checkbox" value="Mỡ nội tạng"> Mỡ nội tạng</label>
+<label><input type="checkbox" value="Kháng insulin"> Kháng insulin</label>
 
-<div class="box">
-<h3>Nhập thông tin</h3>
+<label><input type="checkbox" value="Mụn"> Mụn</label>
+<label><input type="checkbox" value="Da dầu"> Da dầu</label>
+<label><input type="checkbox" value="Lão hóa"> Lão hóa</label>
 
-<input id="height" type="number" placeholder="Chiều cao (cm)">
-<input id="weight" type="number" placeholder="Cân nặng (kg)">
+<label><input type="checkbox" value="Đau lưng"> Đau lưng</label>
+<label><input type="checkbox" value="Vai gáy"> Vai gáy</label>
 
-<br>
+<label><input type="checkbox" value="Tiêu hóa kém"> Tiêu hóa kém</label>
+<label><input type="checkbox" value="Stress"> Stress</label>
+<label><input type="checkbox" value="Mất ngủ"> Mất ngủ</label>
 
-<select id="issue">
-<option value="">-- Chọn vấn đề --</option>
-<option value="beophi">Béo phì</option>
-<option value="mun">Mụn</option>
-<option value="daulung">Đau lưng</option>
-<option value="tieudhoa">Tiêu hóa kém</option>
-</select>
+<label><input type="checkbox" value="Bận rộn"> Bận rộn</label>
 
-<br>
+<h3>Cường độ</h3>
+<select id="level">
+<option>Nhẹ</option>
+<option>Trung bình</option>
+<option>Nặng</option>
+</select><button onclick="generate()">✨ Tạo kế hoạch</button>
 
-<button onclick="analyze()">Phân tích</button>
+<div class="result" id="result"></div></div>
+</div><div class="notify" id="notify"></div><script>
 
-<p id="result"></p>
-</div>
+function generate(){
 
-<script>
-function analyze(){
-  let h = document.getElementById("height").value;
-  let w = document.getElementById("weight").value;
-  let issue = document.getElementById("issue").value;
+let weight = parseFloat(document.getElementById("weight").value);
+let height_cm = parseFloat(document.getElementById("height").value);
 
-  if(h=="" || w==""){
-    document.getElementById("result").innerHTML="❌ Nhập đủ chiều cao và cân nặng!";
+let problems = Array.from(document.querySelectorAll("input[type=checkbox]:checked"))
+.map(e => e.value);
+
+let level = document.getElementById("level").value;
+
+let result = "<b>📊 KẾ HOẠCH</b><br><br>";
+
+// kiểm tra nhập
+if(!weight || !height_cm){
+    result += "⚠️ Vui lòng nhập đủ thông tin";
+    document.getElementById("result").innerHTML = result;
     return;
-  }
-
-  h = h/100;
-  let bmi = w/(h*h);
-  let text = "📊 BMI: " + bmi.toFixed(1) + "<br>";
-
-  if(bmi < 18.5) text += "➡️ Gầy<br>";
-  else if(bmi < 23) text += "➡️ Bình thường<br>";
-  else if(bmi < 25) text += "➡️ Thừa cân<br>";
-  else text += "➡️ Béo phì<br>";
-
-  text += "<br>💡 Gợi ý:<br>";
-
-  if(issue=="beophi"){
-    text += "- Đi bộ 30 phút mỗi ngày<br>- Uống trà gừng<br>";
-  }
-  else if(issue=="mun"){
-    text += "- Uống trà hoa cúc<br>- Hạn chế đồ dầu<br>";
-  }
-  else if(issue=="daulung"){
-    text += "- Tập plank nhẹ<br>- Giãn cơ 10 phút<br>";
-  }
-  else if(issue=="tieudhoa"){
-    text += "- Uống trà gừng<br>- Ăn chậm nhai kỹ<br>";
-  }
-  else{
-    text += "- Ăn uống lành mạnh + tập thể dục<br>";
-  }
-
-  document.getElementById("result").innerHTML = text;
 }
-</script>
 
-</body>
-</html> 
-	
+// đổi cm -> m
+let height = height_cm / 100;
+
+// BMI
+let bmi = weight / (height * height);
+
+result += "📈 BMI: " + bmi.toFixed(1) + "<br>";
+
+// phân loại
+if(bmi < 18.5){
+    result += "⚠️ Gầy<br><br>";
+}
+else if(bmi < 25){
+    result += "👍 Bình thường<br><br>";
+}
+else if(bmi < 30){
+    result += "⚠️ Thừa cân<br><br>";
+}
+else{
+    result += "🚨 Béo phì<br><br>";
+}
+
+// gợi ý
+result += "<b>🎯 Gợi ý:</b><br>";
+
+if(problems.includes("Béo phì") || bmi >= 30){
+    result += "- Cardio + giảm đường + trà gừng<br>";
+}
+
+if(problems.includes("Giảm mỡ nhẹ")){
+    result += "- Đi bộ 30p + ăn nhẹ<br>";
+}
+
+if(problems.includes("Mỡ nội tạng")){
+    result += "- Giảm đường + trà lá sen<br>";
+}
+
+if(problems.includes("Kháng insulin")){
+    result += "- Giảm tinh bột + đi bộ sau ăn<br>";
+}
+
+if(problems.includes("Mụn")){
+    result += "- Trà hoa cúc + nha đam<br>";
+}
+
+if(problems.includes("Da dầu")){
+    result += "- Uống nước nhiều + hạn chế dầu<br>";
+}
+
+if(problems.includes("Lão hóa")){
+    result += "- Trà xanh + ngủ đủ<br>";
+}
+
+if(problems.includes("Đau lưng")){
+    result += "- Giãn cơ + yoga<br>";
+}
+
+if(problems.includes("Vai gáy")){
+    result += "- Giãn cổ + nghỉ ngơi<br>";
+}
+
+if(problems.includes("Tiêu hóa kém")){
+    result += "- Sữa chua + ăn nhẹ<br>";
+}
+
+if(problems.includes("Stress")){
+    result += "- Thiền + đi bộ<br>";
+}
+
+if(problems.includes("Mất ngủ")){
+    result += "- Trà hoa cúc + ngủ sớm<br>";
+}
+
+if(problems.includes("Bận rộn")){
+    result += "- Tập nhanh 15p/ngày<br>";
+}
+
+// cường độ
+result += "<br><b>⏱ Thời gian:</b><br>";
+
+if(level=="Nhẹ"){
+    result += "20–30 phút/ngày";
+}
+else if(level=="Trung bình"){
+    result += "40–50 phút/ngày";
+}
+else{
+    result += "60 phút+/ngày";
+}
+
+result += "<br><br>💚 Kiên trì mỗi ngày!";
+
+document.getElementById("result").innerHTML = result;
+
+showNotify("✅ Đã tạo kế hoạch!");
+}
+
+// notify
+function showNotify(text){
+let box = document.getElementById("notify");
+box.innerText = text;
+box.style.display="block";
+
+setTimeout(()=>{
+box.style.display="none";
+},3000);
+}
+
+// reminder
+setInterval(()=>{
+showNotify("💧 Nhớ uống nước!");
+},60000);
+
+</script></body>
+</html><!DOCTYPE html><html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Health AI</title><style>
+body{
+    font-family: Arial;
+    margin:0;
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
+}
+
+.container{
+    padding:20px;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2{
+    text-align:center;
+    color:white;
+}
+
+input, select{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:10px;
+    border:none;
+    background:#f1f1f1;
+}
+
+label{
+    display:block;
+    margin-top:6px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:12px;
+    background:#4facfe;
+    color:white;
+    font-weight:bold;
+}
+
+.result{
+    margin-top:20px;
+    background:#f9f9f9;
+    padding:15px;
+    border-radius:15px;
+    line-height:1.6;
+}
+
+.notify{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#333;
+    color:white;
+    padding:10px 20px;
+    border-radius:20px;
+    display:none;
+}
+</style></head><body><h2>🌿 Smart Health AI</h2><div class="container">
+<div class="card"><h3>Thông tin</h3>
+<input id="weight" placeholder="Cân nặng (kg)">
+<input id="height" placeholder="Chiều cao (cm)"><h3>Vấn đề</h3><label><input type="checkbox" value="Béo phì"> Béo phì</label>
+<label><input type="checkbox" value="Giảm mỡ nhẹ"> Giảm mỡ nhẹ</label>
+<label><input type="checkbox" value="Mỡ nội tạng"> Mỡ nội tạng</label>
+<label><input type="checkbox" value="Kháng insulin"> Kháng insulin</label>
+
+<label><input type="checkbox" value="Mụn"> Mụn</label>
+<label><input type="checkbox" value="Da dầu"> Da dầu</label>
+<label><input type="checkbox" value="Lão hóa"> Lão hóa</label>
+
+<label><input type="checkbox" value="Đau lưng"> Đau lưng</label>
+<label><input type="checkbox" value="Vai gáy"> Vai gáy</label>
+
+<label><input type="checkbox" value="Tiêu hóa kém"> Tiêu hóa kém</label>
+<label><input type="checkbox" value="Stress"> Stress</label>
+<label><input type="checkbox" value="Mất ngủ"> Mất ngủ</label>
+
+<label><input type="checkbox" value="Bận rộn"> Bận rộn</label>
+
+<h3>Cường độ</h3>
+<select id="level">
+<option>Nhẹ</option>
+<option>Trung bình</option>
+<option>Nặng</option>
+</select><button onclick="generate()">✨ Tạo kế hoạch</button>
+
+<div class="result" id="result"></div></div>
+</div><div class="notify" id="notify"></div><script>
+
+function generate(){
+
+let weight = parseFloat(document.getElementById("weight").value);
+let height_cm = parseFloat(document.getElementById("height").value);
+
+let problems = Array.from(document.querySelectorAll("input[type=checkbox]:checked"))
+.map(e => e.value);
+
+let level = document.getElementById("level").value;
+
+let result = "<b>📊 KẾ HOẠCH</b><br><br>";
+
+// kiểm tra nhập
+if(!weight || !height_cm){
+    result += "⚠️ Vui lòng nhập đủ thông tin";
+    document.getElementById("result").innerHTML = result;
+    return;
+}
+
+// đổi cm -> m
+let height = height_cm / 100;
+
+// BMI
+let bmi = weight / (height * height);
+
+result += "📈 BMI: " + bmi.toFixed(1) + "<br>";
+
+// phân loại
+if(bmi < 18.5){
+    result += "⚠️ Gầy<br><br>";
+}
+else if(bmi < 25){
+    result += "👍 Bình thường<br><br>";
+}
+else if(bmi < 30){
+    result += "⚠️ Thừa cân<br><br>";
+}
+else{
+    result += "🚨 Béo phì<br><br>";
+}
+
+// gợi ý
+result += "<b>🎯 Gợi ý:</b><br>";
+
+if(problems.includes("Béo phì") || bmi >= 30){
+    result += "- Cardio + giảm đường + trà gừng<br>";
+}
+
+if(problems.includes("Giảm mỡ nhẹ")){
+    result += "- Đi bộ 30p + ăn nhẹ<br>";
+}
+
+if(problems.includes("Mỡ nội tạng")){
+    result += "- Giảm đường + trà lá sen<br>";
+}
+
+if(problems.includes("Kháng insulin")){
+    result += "- Giảm tinh bột + đi bộ sau ăn<br>";
+}
+
+if(problems.includes("Mụn")){
+    result += "- Trà hoa cúc + nha đam<br>";
+}
+
+if(problems.includes("Da dầu")){
+    result += "- Uống nước nhiều + hạn chế dầu<br>";
+}
+
+if(problems.includes("Lão hóa")){
+    result += "- Trà xanh + ngủ đủ<br>";
+}
+
+if(problems.includes("Đau lưng")){
+    result += "- Giãn cơ + yoga<br>";
+}
+
+if(problems.includes("Vai gáy")){
+    result += "- Giãn cổ + nghỉ ngơi<br>";
+}
+
+if(problems.includes("Tiêu hóa kém")){
+    result += "- Sữa chua + ăn nhẹ<br>";
+}
+
+if(problems.includes("Stress")){
+    result += "- Thiền + đi bộ<br>";
+}
+
+if(problems.includes("Mất ngủ")){
+    result += "- Trà hoa cúc + ngủ sớm<br>";
+}
+
+if(problems.includes("Bận rộn")){
+    result += "- Tập nhanh 15p/ngày<br>";
+}
+
+// cường độ
+result += "<br><b>⏱ Thời gian:</b><br>";
+
+if(level=="Nhẹ"){
+    result += "20–30 phút/ngày";
+}
+else if(level=="Trung bình"){
+    result += "40–50 phút/ngày";
+}
+else{
+    result += "60 phút+/ngày";
+}
+
+result += "<br><br>💚 Kiên trì mỗi ngày!";
+
+document.getElementById("result").innerHTML = result;
+
+showNotify("✅ Đã tạo kế hoạch!");
+}
+
+// notify
+function showNotify(text){
+let box = document.getElementById("notify");
+box.innerText = text;
+box.style.display="block";
+
+setTimeout(()=>{
+box.style.display="none";
+},3000);
+}
+
+// reminder
+setInterval(()=>{
+showNotify("💧 Nhớ uống nước!");
+},60000);
+
+</script></body>
+</html>
